@@ -16,6 +16,10 @@ import {
 } from "@chakra-ui/react";
 
 function App() {
+  const f = new Intl.NumberFormat("en-gb", {
+    currency: "GBP",
+    style: "currency",
+  });
   const [budget, setBudget] = useState(0);
   const [budgetSubmitted, setBudgetSubmitted] = useState(false);
 
@@ -23,7 +27,6 @@ function App() {
 
   const handleSubmit = () => {
     setBudgetSubmitted(true);
-    console.log("Submitted Budget:", budget);
   };
 
   return (
@@ -57,7 +60,7 @@ function App() {
             {budgetSubmitted && budget > 0 && (
               <Stat>
                 <StatLabel>Budget</StatLabel>
-                <StatNumber>{budget}</StatNumber>
+                <StatNumber>{f.format(budget)}</StatNumber>
               </Stat>
             )}
           </FormControl>
