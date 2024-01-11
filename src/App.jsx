@@ -13,6 +13,9 @@ import {
   Stat,
   StatLabel,
   StatNumber,
+  VStack,
+  Card,
+  CardBody,
 } from "@chakra-ui/react";
 
 function App() {
@@ -23,10 +26,15 @@ function App() {
   const [budget, setBudget] = useState(0);
   const [budgetSubmitted, setBudgetSubmitted] = useState(false);
 
-  console.log(budgetSubmitted);
+  const [expense, setExpense] = useState('');
+  const [expenseSubmitted, setExpenseSubmitted] = useState(false);
+  const [expensesArr, setExpensesArr] = useState([]);
 
-  const handleSubmit = () => {
-    setBudgetSubmitted(true);
+  console.log(expense);
+  console.log(expensesArr);
+
+  const handleSubmit = (isBudget) => {
+    isBudget ? setBudgetSubmitted(true) : setExpenseSubmitted(true);
   };
 
   return (
@@ -37,40 +45,92 @@ function App() {
 
       <Flex w="100%">
         {/* Left side: Budget form */}
-        <Box flex="1" bg="#BEBEB8">
-          <FormControl>
-            <Center w="100">
-              <FormLabel htmlFor="myInput" fontSize="xl">
-                Budget 💰
-              </FormLabel>
-            </Center>
-            <NumberInput
-              onChange={(valueNumber) => {
-                setBudget(valueNumber);
-                setBudgetSubmitted(false);
-              }}
-            >
-              <NumberInputField placeholder="Enter a budget" />
-            </NumberInput>
-            <Center>
-              <Button mt={4} colorScheme="teal" onClick={handleSubmit}>
-                Submit
-              </Button>
-            </Center>
-            {budgetSubmitted && budget > 0 && (
-              <Stat>
-                <StatLabel>Budget</StatLabel>
-                <StatNumber>{f.format(budget)}</StatNumber>
-              </Stat>
-            )}
-          </FormControl>
+        <Box flex="1" bg="#203541" p="0.5em" m="1em">
+          <Card>
+            <CardBody>
+              <FormControl>
+                <FormLabel htmlFor="myInput" fontSize="xl">
+                  Budget 💰
+                </FormLabel>
+
+                <NumberInput
+                  onChange={(valueNumber) => {
+                    setBudget(valueNumber);
+                    setBudgetSubmitted(false);
+                  }}
+                >
+                  <NumberInputField placeholder="Enter a budget" />
+                </NumberInput>
+
+                <Button
+                  mt={4}
+                  colorScheme="teal"
+                  onClick={() => {
+                    handleSubmit(true);
+                  }}
+                >
+                  Submit
+                </Button>
+
+                {budgetSubmitted && budget > 0 && (
+                  <Stat>
+                    <StatLabel>Budget</StatLabel>
+                    <StatNumber>{f.format(budget)}</StatNumber>
+                  </Stat>
+                )}
+              </FormControl>
+            </CardBody>
+          </Card>
         </Box>
 
         {/* Right side: "hi" div */}
-        <Box flex="2" bg="#E3E3DA">
-          <div>hi</div>
+        <Box flex="2" bg="#203F52" p="0.5em" m="1em">
+          <Card>
+            <CardBody>
+              <FormControl>
+                <FormLabel htmlFor="myInput" fontSize="xl">
+                  Add Expense
+                </FormLabel>
+                <NumberInput
+                  value={expense}
+                  onChange={(valueNumber) => {
+                    setExpense(valueNumber);
+                    setExpenseSubmitted(false);
+                  }}
+                >
+                  <NumberInputField placeholder="Enter expense" />
+                </NumberInput>
+                <Button
+                  mt={4}
+                  colorScheme="teal"
+                  onClick={() => {
+                    handleSubmit(false);
+                    setExpensesArr((prevExpenses) => [
+                      ...prevExpenses,
+                      expense,
+                    ]);
+                    setExpense(''); // Optional: Reset the expense input after submission
+                  }}
+                >
+                  Submit
+                </Button>
+              </FormControl>
+            </CardBody>
+          </Card>
         </Box>
       </Flex>
+      <VStack w="100%">
+        {expensesArr && (
+          <Stat>
+            <StatLabel>Budget</StatLabel>
+            <StatNumber>
+              {expensesArr.map((c) => (
+                <p>{f.format(c)}</p>
+              ))}
+            </StatNumber>
+          </Stat>
+        )}
+      </VStack>
     </>
   );
 }
