@@ -1,8 +1,6 @@
 import "./App.css";
 import React, { useState } from "react";
 import {
-  Center,
-  Heading,
   FormControl,
   FormLabel,
   NumberInput,
@@ -13,10 +11,13 @@ import {
   Stat,
   StatLabel,
   StatNumber,
-  VStack,
   Card,
   CardBody,
+  IconButton,
+  HStack,
 } from "@chakra-ui/react";
+import Hero from "./Components/Hero";
+import { DeleteIcon } from "@chakra-ui/icons";
 
 function App() {
   const f = new Intl.NumberFormat("en-gb", {
@@ -26,27 +27,31 @@ function App() {
   const [budget, setBudget] = useState(0);
   const [budgetSubmitted, setBudgetSubmitted] = useState(false);
 
-  const [expense, setExpense] = useState('');
-  const [expenseSubmitted, setExpenseSubmitted] = useState(false);
+  const [expense, setExpense] = useState("");
   const [expensesArr, setExpensesArr] = useState([]);
 
-  console.log(expense);
-  console.log(expensesArr);
-
   const handleSubmit = (isBudget) => {
-    isBudget ? setBudgetSubmitted(true) : setExpenseSubmitted(true);
+    isBudget ? setBudgetSubmitted(true) : null;
+  };
+
+  const handleDeleteExpense = (index) => {
+    setExpensesArr((prevExpenses) => {
+      const deletedExpense = prevExpenses[index];
+      setBudget((prevBudget) => prevBudget + deletedExpense);
+      return prevExpenses.filter((_, i) => i !== index);
+    });
   };
 
   return (
     <>
-      <Center w="100%">
-        <Heading>Expense tracker</Heading>
-      </Center>
+      <Box>
+        <Hero />
+      </Box>
 
-      <Flex w="100%">
+      <Flex w="100%" id="mainContent" minH="65Vh" bg="#102531">
         {/* Left side: Budget form */}
-        <Box flex="1" bg="#203541" p="0.5em" m="1em">
-          <Card>
+        <Box flex="1.5" bg="#1f3541" p="0.5em" m="1em">
+          <Card bg="#1f3541" h="100%">
             <CardBody>
               <FormControl>
                 <FormLabel htmlFor="myInput" fontSize="xl">
@@ -71,21 +76,14 @@ function App() {
                 >
                   Submit
                 </Button>
-
-                {budgetSubmitted && budget > 0 && (
-                  <Stat>
-                    <StatLabel>Budget</StatLabel>
-                    <StatNumber>{f.format(budget)}</StatNumber>
-                  </Stat>
-                )}
               </FormControl>
             </CardBody>
           </Card>
         </Box>
 
         {/* Right side: "hi" div */}
-        <Box flex="2" bg="#203F52" p="0.5em" m="1em">
-          <Card>
+        <Box flex="2.5" bg="#203F52" p="0.5em" m="1em">
+          <Card bg="#203F52" h="100%">
             <CardBody>
               <FormControl>
                 <FormLabel htmlFor="myInput" fontSize="xl">
@@ -95,7 +93,6 @@ function App() {
                   value={expense}
                   onChange={(valueNumber) => {
                     setExpense(valueNumber);
-                    setExpenseSubmitted(false);
                   }}
                 >
                   <NumberInputField placeholder="Enter expense" />
@@ -107,9 +104,10 @@ function App() {
                     handleSubmit(false);
                     setExpensesArr((prevExpenses) => [
                       ...prevExpenses,
-                      expense,
+                      Number(expense),
                     ]);
-                    setExpense(''); // Optional: Reset the expense input after submission
+                    setBudget((prevBudget) => prevBudget - expense);
+                    setExpense(""); // Optional: Reset the expense input after submission
                   }}
                 >
                   Submit
@@ -119,18 +117,37 @@ function App() {
           </Card>
         </Box>
       </Flex>
-      <VStack w="100%">
-        {expensesArr && (
+
+      <Flex w="100%" minH="35Vh" bg="#102531">
+        <Box flex="1.5" bg="#17425A" p="0.5em" m="1em">
           <Stat>
-            <StatLabel>Budget</StatLabel>
-            <StatNumber>
-              {expensesArr.map((c) => (
-                <p>{f.format(c)}</p>
-              ))}
-            </StatNumber>
+            <StatLabel fontSize="xl">Budget</StatLabel>
+            {budgetSubmitted && budget > 0 && (
+              <StatNumber>{f.format(budget)}</StatNumber>
+            )}
           </Stat>
-        )}
-      </VStack>
+        </Box>
+        <Box flex="2.5" bg="#1F3646" p="0.5em" m="1em">
+          <Stat>
+            <StatLabel fontSize="xl">All Expenses</StatLabel>
+            {expensesArr.length > 0 && (
+              <StatNumber>
+                {expensesArr.map((c, index) => (
+                  <HStack key={index}>
+                    <p>{f.format(c)}</p>
+                    <IconButton
+                      onClick={() => handleDeleteExpense(index)}
+                      icon={<DeleteIcon />}
+                      size="sm"
+                      colorScheme="red"
+                    />
+                  </HStack>
+                ))}
+              </StatNumber>
+            )}
+          </Stat>
+        </Box>
+      </Flex>
     </>
   );
 }
