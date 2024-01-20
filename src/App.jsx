@@ -30,6 +30,8 @@ function App() {
   const [expense, setExpense] = useState("");
   const [expensesArr, setExpensesArr] = useState([]);
 
+  console.log(budget);
+
   const handleSubmit = (isBudget) => {
     isBudget ? setBudgetSubmitted(true) : null;
   };
@@ -122,9 +124,7 @@ function App() {
         <Box flex="1.5" bg="#17425A" p="0.5em" m="1em">
           <Stat>
             <StatLabel fontSize="xl">Budget</StatLabel>
-            {budgetSubmitted && budget > 0 && (
-              <StatNumber>{f.format(budget)}</StatNumber>
-            )}
+            {budgetSubmitted && <StatNumber>{f.format(budget)}</StatNumber>}
           </Stat>
         </Box>
         <Box flex="2.5" bg="#1F3646" p="0.5em" m="1em">
